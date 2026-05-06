@@ -611,7 +611,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "${DEVELOPMENT_TEAM}";
+				DEVELOPMENT_TEAM = C5Y9Y8M89T;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1474,7 +1474,7 @@
 					"$(PROJECT_DIR)/MeloNX/Dependencies/Dynamic\\ Libraries",
 					"$(PROJECT_DIR)/MeloNX/Dependencies/Dynamic\\ Libraries",
 				);
-				MARKETING_VERSION = 2.4;
+				MARKETING_VERSION = 2.4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vertexselection.MeloVertex;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -2564,7 +2564,7 @@
 					"$(PROJECT_DIR)/MeloNX/Dependencies/Dynamic\\ Libraries",
 					"$(PROJECT_DIR)/MeloNX/Dependencies/Dynamic\\ Libraries",
 				);
-				MARKETING_VERSION = 2.4;
+				MARKETING_VERSION = 2.4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vertexselection.MeloVertex.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -3452,7 +3452,7 @@
 					"$(PROJECT_DIR)/MeloNX/Dependencies/Dynamic\\ Libraries",
 					"$(PROJECT_DIR)/MeloNX/Dependencies/Dynamic\\ Libraries",
 				);
-				MARKETING_VERSION = 2.4;
+				MARKETING_VERSION = 2.4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.vertexselection.MeloVertex.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

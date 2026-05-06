@@ -140,10 +140,10 @@ struct ContentView: View {
             .alert(isPresented: shouldShowEntitlementBinding) {
                 Alert(
                     title: Text("Entitlement"),
-                    message: Text(LocalizedStringKey("MeloNX **REQUIRES** the Increased Memory Limit entitlement, Please follow the instructions on how to Install MeloNX and Enable the Entitlement.")),
+                    message: Text(LocalizedStringKey("MeloVertex **REQUIRES** the Increased Memory Limit entitlement, Please follow the instructions on how to Install MeloVertex and Enable the Entitlement.")),
                     primaryButton: .default(Text("Instructions")) {
                         UIApplication.shared.open(
-                            URL(string: "https://git.ryujinx.app/melonx/emu#how-to-install")!,
+                            URL(string: "https://github.com/VertexSelection/MeloVertex#how-to-install")!,
                             options: [:],
                             completionHandler: nil
                         )

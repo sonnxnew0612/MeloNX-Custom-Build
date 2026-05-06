@@ -31,7 +31,7 @@ struct SetupView: View {
         keysImported && firmImported && !isInstallingFirmware
     }
     
-    let cool: LocalizedStringKey = "MeloNX has issues with Certificates and should not be used. Official Install Guides is [here](https://melonx.org)"
+    let cool: LocalizedStringKey = "MeloVertex has issues with Certificates and should not be used."
     
     var body: some View {
         Group {
@@ -521,7 +521,7 @@ struct SetupView: View {
         refreshSetupStatus()
         
         if !firmImported {
-            presentErrorModal("Firmware installation is taking longer than expected. Please keep MeloNX open and try again in a few minutes.")
+            presentErrorModal("Firmware installation is taking longer than expected. Please keep MeloVertex open and try again in a few minutes.")
         }
     }
     

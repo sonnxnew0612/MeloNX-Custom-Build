@@ -44,7 +44,7 @@ namespace Ryujinx.HLE.HOS.Services.Account.Acc
             if (!_profiles.TryGetValue(DefaultUserId.ToString(), out _) && _profiles.Count == 0)
             {
             
-                AddUser("MeloNX", DefaultUserImage, DefaultUserId);
+                AddUser("MeloVertex", DefaultUserImage, DefaultUserId);
 
                 OpenUser(DefaultUserId);
             }
@@ -89,7 +89,7 @@ namespace Ryujinx.HLE.HOS.Services.Account.Acc
             if (!_profiles.TryGetValue(DefaultUserId.ToString(), out _) && _profiles.Count == 0)
             {
 
-                AddUser("MeloNX", DefaultUserImage, DefaultUserId);
+                AddUser("MeloVertex", DefaultUserImage, DefaultUserId);
 
                 OpenUser(DefaultUserId);
             }

@@ -63,6 +63,10 @@ struct GamesListView: View {
     @State var controllerEditor: Game?
     @State var scrollTo: Game?
     
+    @AppStorage("showMeloVertexDisclaimer") private var showDisclaimer: Bool = true
+    @State private var showingDisclaimerAlert: Bool = false
+    @State private var hasShownDisclaimerThisSession: Bool = false
+    
     @State var previousDpadHandlers: [GCController: GCControllerDirectionPadValueChangedHandler?] = [:]
     @State var previousButtonAHandlers: [GCController: GCControllerButtonValueChangedHandler?] = [:]
     
@@ -166,7 +170,7 @@ struct GamesListView: View {
             .onAppear() {
                 scrollTo = gameHandler.currentGame
             }
-            .navigationTitle("Library")
+            .navigationTitle("MeloVertex Library")
             .toolbar {
                 toolbarHandler()
             }
@@ -191,8 +195,21 @@ struct GamesListView: View {
                 }
             }
         }
+        .alert("IMPORTANT", isPresented: $showingDisclaimerAlert) {
+            Button("Alright let me in!", role: .cancel) { }
+            Button("Don't show me this again") {
+                showDisclaimer = false
+            }
+        } message: {
+            Text("MeloVertex is NOT affiliated with MeloNX. If you run into any issues while running MeloVertex, do not use the name MeloNX while posting it online, but instead use MeloVertex name.\n\nIf you're having problems, first check the README.md in MeloVertex GitHub page. (github.com/vertexselection)")
+        }
         .onAppear() {
             ryujinx.addGames()
+            
+            if showDisclaimer && !hasShownDisclaimerThisSession {
+                showingDisclaimerAlert = true
+                hasShownDisclaimerThisSession = true
+            }
         }
     }
     

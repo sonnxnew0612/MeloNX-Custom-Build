@@ -23,7 +23,7 @@ class BaseController: Equatable, Identifiable {
     
     var type: ControllerType
     var virtual: Bool = false
-    var name: String { virtual ? "MeloNX Virtual Controller" : nativeController?.vendorName ?? "Unknown" }
+    var name: String { virtual ? "MeloVertex Virtual Controller" : nativeController?.vendorName ?? "Unknown" }
     var nativeController: GCController?
     
     // Motion
@@ -52,7 +52,7 @@ class BaseController: Equatable, Identifiable {
         self.type = virtual ? .joyconPair : .proController
         
         let identifier = UUID().uuidString
-        let queueLabel = virtual ? "com.stossy11.MeloNX.controller.virtual" : "com.stossy11.MeloNX.controller.\(identifier)"
+        let queueLabel = virtual ? "com.vertexselection.MeloVertex.controller.virtual" : "com.vertexselection.MeloVertex.controller.\(identifier)"
         
         self.inputQueue = DispatchQueue(label: queueLabel, qos: .userInteractive)
         self.motionQueue = DispatchQueue(label: queueLabel + ".motion", qos: .background)
