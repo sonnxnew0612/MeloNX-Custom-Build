@@ -9,7 +9,7 @@
     Important: THIS FORK IS UNOFFICIAL! I AM NOT AFFILIATED WITH MELONX TEAM WHATSOEVER. FOR SUPPORT DO NOT GO TO MELONX SUPPORT CHANNELS FOR MELOVERTEX.
   </p>
   <p align="center">
-    This fork fixes the keyboard and a hang bug in initial setup.
+    This fork fixes the keyboard and a hang bug in initial setup. It also adds support for Tomodachi Life: Living the Dream.
   </p>
   <p align="center">
     MeloVertex is an iOS Nintendo Switch emulator based on MeloNX which is based on Ryujinx, written primarily in C# and Swift. Designed to bring accurate performance and a user-friendly interface to iOS, MeloVertex makes Switch games accessible on Apple devices.
@@ -24,6 +24,9 @@
 - This fork has different bundle ID than the original MeloNX so that it doesn't replace your existing MeloNX install. I made this fork so that you can use this fork until MeloNX Team actually fixes the original app.
 
 # FAQ
+
+#### **Does this unofficial fork support Tomodachi Life?**
+Yes. Tomodachi Life should work with MeloVertex. If there are any crashes, check important section above.
 
 #### **Where's the prod.keys file?/Where can I download \[game]?**
 I can't tell you that because I don't support piracy.
