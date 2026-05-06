@@ -6,6 +6,9 @@
   </p>
   <h1 align="center">MeloVertex (MeloNX Fork)</h1>
   <p align="center">
+    Important: THIS FORK IS UNOFFICIAL! I AM NOT AFFILIATED WITH MELONX TEAM WHATSOEVER. FOR SUPPORT DO NOT GO TO MELONX SUPPORT CHANNELS FOR MELOVERTEX.
+  </p>
+  <p align="center">
     This fork fixes the keyboard and a hang bug in initial setup.
   </p>
   <p align="center">
@@ -23,11 +26,10 @@
 # FAQ
 
 #### **Where's the prod.keys file?/Where can I download \[game]?**
-**We do not support piracy**, It is forbidden to request copyrighted content 
-(Firmware/Games/Keys/Shaders) on our repositories or on the MeloNX Discord.
+I can't tell you that because I don't support piracy.
 
 #### **Do I need a Switch to use this emulator?**
-MeloNX emulator is capable of running many homebrew applications, and can be a crucial tool in the development and debugging of homebrew applications and games. To play commercial games, you will need access to a Switch compatible with custom firmware (CFW), which will enable you to dump your system firmware, keys and legally purchased games.
+MeloVertex emulator is capable of running many homebrew applications, and can be a crucial tool in the development and debugging of homebrew applications and games. To play commercial games, you will need access to a Switch compatible with custom firmware (CFW), which will enable you to dump your system firmware, keys and legally purchased games.
 
 #### **How can I dump my firmware/games/keys?**
 First, you need to hack your Nintendo Switch, which you can learn how to do here: [https://nh-server.github.io/switch-guide/](https://nh-server.github.io/switch-guide/).
@@ -68,10 +70,6 @@ Extended Virtual Addressing is required for *specific devices* which don't allow
 Those Devices include:<br>
 iPads with less than 8GB of RAM.<br>
 iPhones with less than 4GB of RAM.
-
-## Discord Server
-We have a discord server!
-- https://discord.gg/HjCDPTpC3W
 
 ## How to install
 
