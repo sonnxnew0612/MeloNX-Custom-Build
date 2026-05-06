@@ -9,15 +9,15 @@
     This fork fixes the keyboard and a hang bug in initial setup.
   </p>
   <p align="center">
-    MeloNX is an iOS Nintendo Switch emulator based on Ryujinx, written primarily in C# and Swift. Designed to bring accurate performance and a user-friendly interface to iOS, MeloNX makes Switch games accessible on Apple devices.
-    Developed from the ground up, MeloNX is open-source and available on Github under the <a href="LICENSE.txt" target="_blank">GPLv3 license</a>.
+    MeloVertex is an iOS Nintendo Switch emulator based on MeloNX which is based on Ryujinx, written primarily in C# and Swift. Designed to bring accurate performance and a user-friendly interface to iOS, MeloVertex makes Switch games accessible on Apple devices.
+    Forked from MeloNX, MeloVertex is open-source and available on Github under the <a href="LICENSE.txt" target="_blank">GPLv3 license</a>.
   </p>
 </body>
 
-# Important!
+# IMPORTANT!!!!!!
 
 - If the game is crashing, turn on Ignore Missing Services in Advanced Settings.
-- Don't forget to attach a script in StikDebug to MeloVertex to get JIT support.
+- Don't forget to attach the "universal.js" script in StikDebug to MeloVertex to get JIT support. To do this, open StikDebug, long press on MeloVertex, and tap "Attach Script" then select "universal.js".
 - This fork has different bundle ID than the original MeloNX so that it doesn't replace your existing MeloNX install. I made this fork so that you can use this fork until MeloNX Team actually fixes the original app.
 
 # FAQ
@@ -42,7 +42,7 @@ Once you have hacked your Switch, backed up your keys and dumped your firmware, 
 
 # Info
 - A Paid Developer account or [TrollStore](https://github.com/opa334/TrollStore) may be needed for specific devices (Read about Entitlements below)
-- MeloNX **REQUIRES** JIT and CANNOT run without it.
+- MeloVertex **REQUIRES** JIT and CANNOT run without it.
 - Recommended iPhone: iPhone 15 Pro+ (8/12GB RAM both have the same memory limit of 6GB)
 - Recommended iPad: iPad Pro 5th+ 128GB+ (8GB RAM) / 1TB+ (16GB RAM) or iPad Air 5+ (8GB RAM)
 - Lowest Compatible Device (Paid Developer Account): iPhone 6s (iOS 15)
@@ -52,13 +52,13 @@ Once you have hacked your Switch, backed up your keys and dumped your firmware, 
 
 > **Entitlements** are the underlying security permissions that allow an app to access specific features of your device
 
-MeloNX can use **2** Entitlements:
+MeloVertex can use **2** Entitlements:
 
 **Increased Memory Limit:**<br>
-\- This allows MeloNX to be able to use the most amount of ram apple lets us.
+\- This allows MeloVertex to be able to use the most amount of ram apple lets us.
 
 **Extended Virtual Addressing**:<br>
-\- This allows MeloNX to be able to ask iOS for more memory / RAM then actually available.<br>
+\- This allows MeloVertex to be able to ask iOS for more memory / RAM then actually available.<br>
 \- Extended Virtual Addressing is a **PAID** entitlement, [TrollStore](https://github.com/opa334/TrollStore) also gives this entitlement.
 
 Increased Memory Limit is required for **all devices**.
@@ -82,25 +82,25 @@ We have a discord server!
 #### **Make sure to read the FAQ and Info before continuing.**
 
 #### 1. Sideload Application
-Download and install MeloNX using [PlumeImpactor](https://github.com/khcrysalis/PlumeImpactor/releases) on a computer.
-- [Download **MeloNX** From Releases](https://git.ryujinx.app/projects/MeloNX/releases)
+Download and install MeloVertex using [PlumeImpactor](https://github.com/khcrysalis/PlumeImpactor/releases) on a computer.
+- [Download **MeloVertex** From Releases](https://github.com/VertexSelection/MeloVertex/releases)
 - Open PlumeImpactor > Click Settings > Click Login
 - Login with the same Apple ID you are using for SideStore (or AltStore).
-- Import the MeloNX .ipa you downloaded earlier.
+- Import the MeloVertex .ipa you downloaded earlier.
 - Plug in your iDevice.
 - Select your iDevice from the dropdown at the top of the window.
 - Click Install.
 
 #### 2. Load Into SideStore (Optional)
-To have MeloNX show inside SideStore (or AltStore), You must re-install it:
+To have MeloVertex show inside SideStore (or AltStore), You must re-install it:
 - Open **SideStore** on your iDevice
 - Select the **My Apps** tab > Tap the **+** button.
-- Select the **MeloNX** .ipa (You may need to download it again.)
+- Select the **MeloVertex** .ipa (You may need to download it again.)
 - Wait for it to Sideload, then it should show up Inside **SideStore**.
-- Now You can Refresh **MeloNX** and Update it without needing a computer.
+- Now You can Refresh **MeloVertex** and Update it without needing a computer.
 
 #### 4. Setup Files
-- Add Encryption Keys and Firmware using the file picker inside MeloNX,
+- Add Encryption Keys and Firmware using the file picker inside MeloVertex,
 - Information for where to get these files are [here](#how-can-i-dump-my-firmwaregameskeys)
 
 #### 5. Enable JIT
@@ -111,24 +111,24 @@ To have MeloNX show inside SideStore (or AltStore), You must re-install it:
 
 #### **Make sure to read the FAQ and Info before continuing.**
 
-#### 1. Sideload MeloNX
-Download and install MeloNX using your preferred Apple ID (NOT CERT) sideloader:
-- [Download MeloNX from Releases](https://git.ryujinx.app/projects/MeloNX/releases)
+#### 1. Sideload MeloVertex
+Download and install MeloVertex using your preferred Apple ID (NOT CERT) sideloader:
+- [Download MeloVertex from Releases](https://github.com/VertexSelection/MeloVertex/releases)
 
 #### 2. Enable Memory Entitlement
 - Visit [Apple Developer Identifiers](https://developer.apple.com/account/resources/identifiers).
-- Locate **MeloNX** and enable the following entitlements:
+- Locate **MeloVertex** and enable the following entitlements:
 - `Increased Memory Limit`
 - `Extended Virtual Addressing`
 - `Increased Debugging Memory Limit`
 
-#### 3. Reinstall MeloNX
-- Delete existing MeloNX installation
-- Sideload MeloNX again
+#### 3. Reinstall MeloVertex
+- Delete existing MeloVertex installation
+- Sideload MeloVertex again
 - Verify **Increased Memory Limit** is enabled in app
 
 #### 4. Setup Files
-- Add Encryption Keys and Firmware using the file picker inside MeloNX
+- Add Encryption Keys and Firmware using the file picker inside MeloVertex
 - Information for where to get these files are [here](#how-can-i-dump-my-firmwaregameskeys)
 
 #### 5. Enable JIT
@@ -136,7 +136,7 @@ Download and install MeloNX using your preferred Apple ID (NOT CERT) sideloader:
 
 ### Free Developer Account (Legacy, On-Device)
 
-> [SideStore](https://sidestore.io/) is recommended to Sideload MeloNX.
+> [SideStore](https://sidestore.io/) is recommended to Sideload MeloVertex.
 
 #### **Make sure to read the FAQ and Info before continuing.**
 
@@ -145,24 +145,24 @@ Download and install MeloNX using your preferred Apple ID (NOT CERT) sideloader:
 #### 1. Sideload Applications
 
 Download and install both apps using your preferred **APPLE ID** sideloader:
-- **MeloNX**: [Download from Releases](https://git.ryujinx.app/projects/MeloNX/releases)
+- **MeloVertex**: [Download from Releases](https://github.com/VertexSelection/MeloVertex/releases)
 - **Entitlement App**: [Download IPA](https://github.com/hugeBlack/GetMoreRam/releases/download/nightly/Entitlement.ipa)
 #### 2. Enable Memory Entitlement
 
 > If the Entitlement / GetMoreRam app isn't working correctly, then try the new Plumeimpactor method.
 - Open the **Entitlement app** > **Settings**
-- Sign in with the same Apple ID you used to Sideload MeloNX.
+- Sign in with the same Apple ID you used to Sideload MeloVertex.
 - Go to **App IDs** > tap **Refresh**
-- Select **MeloNX** (e.g., "com.stossy11.MeloNX.XXXXXX")
+- Select **MeloVertex** (e.g., "com.vertexselection.melovertex.XXXXXX")
 - Tap **Add Increased Memory Limit**
 
-#### 3. Reinstall MeloNX
-- Delete existing MeloNX installation
-- Sideload MeloNX again
+#### 3. Reinstall MeloVertex
+- Delete existing MeloVertex installation
+- Sideload MeloVertex again
 - Verify **Increased Memory Limit** is enabled in app
 
 #### 4. Setup Files
-- Add Encryption Keys and Firmware using the file picker inside MeloNX
+- Add Encryption Keys and Firmware using the file picker inside MeloVertex
 - Information for where to get these files are [here](#how-can-i-dump-my-firmwaregameskeys)
 
 #### 5. Enable JIT
@@ -199,7 +199,7 @@ Rumble is also natively supported in most cases.
 
 
 \- **DLC & Modifications**<br>
-MeloNX supports DLC + Game Update Add-ons.<br>
+MeloVertex supports DLC + Game Update Add-ons.<br>
 Mods (romfs, exefs, and runtime mods such as cheats) are unsupported; but may work. 
 
 
