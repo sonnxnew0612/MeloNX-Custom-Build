@@ -7,46 +7,42 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest # Sử dụng macOS để có Xcode và hỗ trợ build iOS
+    runs-on: macos-latest
 
     steps:
-      # Bước 1: Checkout mã nguồn với Git LFS (Quan trọng nhất)
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          lfs: true # [Sửa lỗi unknown file type] Đảm bảo tải file .dylib thật từ Git LFS
-          submodules: recursive # Tải các dependencies nếu dự án có dùng submodule
+          lfs: true # Đảm bảo tải file .dylib thật
+          submodules: recursive
 
-      # Bước 2: Cài đặt .NET (Cần thiết vì MeloNX/Ryujinx chạy trên nền .NET)
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x' # Hoặc phiên bản dự án yêu cầu trong global.json
+          dotnet-version: '8.0.x'
 
-      # Bước 3: Cài đặt Xcode (Đảm bảo phiên bản tương thích với mã nguồn Swift)
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
-      # Bước 4: Chạy script chuẩn bị (nếu có trong dự án của bạn)
-      # Ví dụ: Tải các thư viện hoặc build dylib phụ trợ
       - name: Build Dependencies
         run: |
           chmod +x distribution/ios/*.sh
-          ./distribution/ios/get_dotnet.sh #
+          # Chạy script chuẩn bị của dự án
+          ./distribution/ios/get_dotnet.sh 
 
-      # Bước 5: Thực hiện Build dự án
       - name: Build MeloNX for iOS
         run: |
+          # Thêm tham số -destination để Xcode xác định đúng mục tiêu build
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
                      -sdk iphoneos \
+                     -destination 'generic/platform=iOS' \
                      -derivedDataPath build \
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGNING_REQUIRED=NO \
                      clean build
 
-      # Bước 6: Đóng gói và lưu sản phẩm (Artifacts)
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
