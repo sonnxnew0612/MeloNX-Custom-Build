@@ -7,8 +7,7 @@ on:
 
 jobs:
   build:
-    # Chuyển về macos-14 vì macos-15 (Xcode 16) đôi khi quá khắt khe với các dự án cũ
-    runs-on: macos-14 
+    runs-on: macos-15 # Sử dụng macOS 15 để có Xcode 16.2
 
     steps:
       - name: Checkout Repository
@@ -23,7 +22,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
       - name: Build Dependencies
         run: |
@@ -32,7 +31,7 @@ jobs:
 
       - name: Build MeloNX for iOS (Final Fix)
         run: |
-          # Dùng xcodebuild với các thông số ép buộc cực hạn
+          # Ép Xcode tìm header trong đúng thư mục Dependencies để sửa lỗi Bridging Header
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
@@ -46,9 +45,9 @@ jobs:
                      ACTOOL_VALIDATE_CONTENTS=NO \
                      ACTOOL_COMPILE_FOR_DEVICE_ONLY=YES \
                      COMPILER_INDEX_STORE_ENABLE=NO \
+                     HEADER_SEARCH_PATHS='$(inherited) ${SRCROOT}/MeloNX/Dependencies/**' \
+                     FRAMEWORK_SEARCH_PATHS='$(inherited) ${SRCROOT}/MeloNX/Dependencies/**' \
                      SWIFT_COMPILATION_MODE=wholemodule \
-                     GCC_PREPROCESS_DEFINITIONS='$GCC_PREPROCESS_DEFINITIONS JIT=1' \
-                     OTHER_SWIFT_FLAGS="-suppress-warnings" \
                      clean build
 
       - name: Upload Build Artifact
