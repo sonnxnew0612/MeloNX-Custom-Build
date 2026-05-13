@@ -10,32 +10,28 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      # Bước 1: Checkout mã nguồn với Git LFS để tránh lỗi "unknown file type" cho .dylib
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           lfs: true 
           submodules: recursive
 
-      # Bước 2: Cài đặt môi trường .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Bước 3: Chọn phiên bản Xcode 16.2
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
-      # Bước 4: Chạy các script chuẩn bị dependencies của dự án
       - name: Build Dependencies
         run: |
           chmod +x distribution/ios/*.sh
           ./distribution/ios/get_dotnet.sh 
 
-      # Bước 5: Thực hiện Build dự án với các cờ bỏ qua lỗi Asset Catalog
       - name: Build MeloNX for iOS
         run: |
+          # Sử dụng các cờ bổ sung để ép Xcode bỏ qua việc kiểm tra Runtime và xử lý Asset phức tạp
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
@@ -46,9 +42,10 @@ jobs:
                      CODE_SIGNING_REQUIRED=NO \
                      ASSETCATALOG_COMPILER_SKIP_APP_STORE_UTILIZATION=YES \
                      ACTOOL_VALIDATE_CONTENTS=NO \
+                     ACTOOL_COMPILE_FOR_DEVICE_ONLY=YES \
+                     COMPILER_INDEX_STORE_ENABLE=NO \
                      clean build
 
-      # Bước 6: Đóng gói và lưu sản phẩm build được
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
