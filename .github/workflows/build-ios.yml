@@ -18,13 +18,35 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Chạy Script Build iOS của Dev cũ
+      - name: Bước 1 - Biên dịch Lõi giả lập C#
         run: |
           chmod +x distribution/ios/*.sh
           ./distribution/ios/compile.sh 
+
+      - name: Bước 2 - Biên dịch Vỏ ứng dụng (MeloNX Frontend)
+        run: |
+          # Chui vào thư mục chứa project Xcode
+          cd src/MeloNX
+          # Gọi Xcode build app, ép bỏ qua bước kiểm tra chứng chỉ để cài cho TrollStore
+          xcodebuild clean build -project MeloNX.xcodeproj -scheme MeloNX -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: Bước 3 - Đóng gói thành file IPA
+        run: |
+          # Vào thư mục Xcode vừa nhả file .app ra
+          cd src/MeloNX/build/Build/Products/Release-iphoneos
+          
+          # Tạo thư mục Payload (Chuẩn bắt buộc của file IPA)
+          mkdir Payload
+          
+          # Di chuyển app vào Payload và nén zip lại
+          mv MeloNX.app Payload/
+          zip -qr MeloNX-Custom.ipa Payload
+          
+          # Đẩy file ipa ra ngoài cùng để dễ lấy
+          mv MeloNX-Custom.ipa ../../../../../MeloNX-Custom.ipa
 
       - name: Lấy file IPA mang về
         uses: actions/upload-artifact@v4
         with:
           name: MeloNX-iOS-Release
-          path: "**/*.ipa"
+          path: "MeloNX-Custom.ipa"
