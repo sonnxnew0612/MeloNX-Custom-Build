@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-15 # Sử dụng macOS 15 để có bộ SDK mới nhất ổn định hơn
 
     steps:
       - name: Checkout Repository
@@ -31,12 +31,12 @@ jobs:
 
       - name: Build MeloNX for iOS
         run: |
-          # Sử dụng các cờ bổ sung để ép Xcode bỏ qua việc kiểm tra Runtime và xử lý Asset phức tạp
+          # SỬA ĐỔI: Sử dụng tham số -sdk iphoneos để Xcode tự chọn bản SDK cao nhất hiện có trên server
+          # Bỏ qua tham số -destination generic nếu nó gây lỗi nhận diện SDK
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
                      -sdk iphoneos \
-                     -destination 'generic/platform=iOS' \
                      -derivedDataPath build \
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGNING_REQUIRED=NO \
