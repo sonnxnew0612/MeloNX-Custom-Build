@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          lfs: true # Đảm bảo tải file .dylib thật
+          lfs: true
           submodules: recursive
 
       - name: Setup .NET
@@ -27,12 +27,10 @@ jobs:
       - name: Build Dependencies
         run: |
           chmod +x distribution/ios/*.sh
-          # Chạy script chuẩn bị của dự án
           ./distribution/ios/get_dotnet.sh 
 
       - name: Build MeloNX for iOS
         run: |
-          # Thêm tham số -destination để Xcode xác định đúng mục tiêu build
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
@@ -41,6 +39,7 @@ jobs:
                      -derivedDataPath build \
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGNING_REQUIRED=NO \
+                     ASSETCATALOG_COMPILER_SKIP_APP_STORE_UTILIZATION=YES \
                      clean build
 
       - name: Upload Build Artifact
