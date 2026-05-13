@@ -46,7 +46,7 @@ jobs:
           mv MeloNX-Custom.ipa ../../../../../MeloNX-Custom.ipa
 
       - name: Lấy file IPA mang về
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MeloNX-iOS-Release
           path: "MeloNX-Custom.ipa"
