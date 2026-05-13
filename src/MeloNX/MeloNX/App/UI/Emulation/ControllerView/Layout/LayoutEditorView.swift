@@ -13,9 +13,9 @@ class JoystickDPadUIHandler: ObservableObject {
     var joystickDpad: Bool {
         get {
             uiUpdate.toggle()
-            return UserDefaults.standard.bool(forKey: "joystickDpad-\(gameId, default: "global")")
+            return UserDefaults.standard.bool(forKey: "joystickDpad-\(gameId ?? "global")")
         } set {
-            UserDefaults.standard.set(newValue, forKey: "joystickDpad-\(gameId, default: "global")")
+            UserDefaults.standard.set(newValue, forKey: "joystickDpad-\(gameId ?? "global")")
             uiUpdate.toggle()
         }
     }

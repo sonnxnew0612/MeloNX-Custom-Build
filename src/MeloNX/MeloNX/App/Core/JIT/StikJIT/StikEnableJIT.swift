@@ -27,7 +27,6 @@ func checkforOld() -> Bool {
     return true
 }
 
-
 func checkifappinstalled(_ id: String) -> Bool {
     guard let handle = dlopen("/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices", RTLD_LAZY) else {
         return false
@@ -45,7 +44,6 @@ func checkifappinstalled(_ id: String) -> Bool {
     let bundleID: CFString = id as CFString
     let suspended: Bool = false
     
-
     let SBSLaunchApplicationWithIdentifier = unsafeBitCast(sym, to: SBSLaunchApplicationWithIdentifierFunc.self)
     let result = SBSLaunchApplicationWithIdentifier(bundleID, suspended)
 
@@ -62,7 +60,9 @@ private func hasStikDebugAttachEntitlement() -> Bool {
 }
 
 private func stikScriptDataURLSafe() -> String {
-    script
+    // ĐÃ SỬA: Tự động mã hóa Base64 từ đoạn text JavaScript (giúp bạn không phải làm bằng tay nữa)
+    let base64String = script.data(using: .utf8)?.base64EncodedString() ?? ""
+    return base64String
         .replacingOccurrences(of: "+", with: "-")
         .replacingOccurrences(of: "/", with: "_")
         .replacingOccurrences(of: "=", with: "")
@@ -99,7 +99,8 @@ private func buildStikJitEnableURL() -> URL? {
         // Keep bundle-id as metadata/fallback for tooling that still keys off identifiers.
         items.append(URLQueryItem(name: "pid", value: String(getpid())))
         items.append(URLQueryItem(name: "bundle-id", value: bundleID))
-        items.append(URLQueryItem(name: "script-name", value: "MeloNX"))
+        // ĐÃ SỬA: Báo cho StikDebug biết tên file là universal.js
+        items.append(URLQueryItem(name: "script-name", value: "universal.js"))
         items.append(URLQueryItem(name: "script-data", value: stikScriptDataURLSafe()))
     } else if isInLiveContainer.0 {
         items.append(URLQueryItem(name: "pid", value: String(getpid())))
@@ -122,6 +123,270 @@ func enableJITStik() {
     }
 }
 
+// ĐÃ SỬA: Gắn trực tiếp raw text JS vào đây. Swift sẽ tự lo phần mã hóa Base64!
 let script = """
-Y29uc3QgQ01EX0RFVEFDSCA9IDA7CmNvbnN0IENNRF9QUkVQQVJFX1JFR0lPTiA9IDE7CmNvbnN0IENNRF9ORVdfQlJFQUtQT0lOVFMgPSAyOwpjb25zdCBjb21tYW5kcyA9IHsKICAgIFtDTURfREVUQUNIXTogSklUMjZEZXRhY2gsCiAgICBbQ01EX1BSRVBBUkVfUkVHSU9OXTogSklUMjZQcmVwYXJlUmVnaW9uLAogICAgW0NNRF9ORVdfQlJFQUtQT0lOVFNdOiBKSVQyNk5ld0JyZWFrcG9pbnRzCn07CmNvbnN0IGxlZ2FjeUNvbW1hbmRzID0gewogICAgWzB4NjhdOiBKSVQyNk5ld0JyZWFrcG9pbnRzLAogICAgWzB4NjldOiBKSVQyNkhhbmRsZUJyazB4NjksCiAgICBbMHhmMDBkXTogSklUMjZIYW5kbGVCcmsweGYwMGQKfTsKCmxldCB0aWQsIHgwLCB4MSwgeDE2LCBwYzsKCmxldCBkZXRhY2hlZCA9IGZhbHNlOwpsZXQgcGlkID0gZ2V0X3BpZCgpOwpsb2coYHBpZCA9ICR7cGlkfWApOwpsZXQgYXR0YWNoUmVzcG9uc2UgPSBzZW5kX2NvbW1hbmQoYHZBdHRhY2g7JHtwaWQudG9TdHJpbmcoMTYpfWApOwpsb2coYGF0dGFjaF9yZXNwb25zZSA9ICR7YXR0YWNoUmVzcG9uc2V9YCk7CiAgICAKbGV0IHRvdGFsQnJlYWtwb2ludHMgPSAwOwp3aGlsZSAoIWRldGFjaGVkKSB7CiAgICB0b3RhbEJyZWFrcG9pbnRzKys7CiAgICBsb2coYEhhbmRsaW5nIGJyZWFrcG9pbnQgJHt0b3RhbEJyZWFrcG9pbnRzfWApOwogICAgCiAgICBsZXQgYnJrUmVzcG9uc2UgPSBzZW5kX2NvbW1hbmQoYGNgKTsKICAgIGxvZyhgYnJrUmVzcG9uc2UgPSAke2Jya1Jlc3BvbnNlfWApOwogICAgCiAgICBsZXQgdG1wTWF0Y2ggPSAvVFswLTlhLWZdK3RocmVhZDooPzx0aWQ+WzAtOWEtZl0rKTsvLmV4ZWMoYnJrUmVzcG9uc2UpOwogICAgdGlkID0gdG1wTWF0Y2ggPyB0bXBNYXRjaC5ncm91cHNbJ3RpZCddIDogbnVsbDsKICAgIHRtcE1hdGNoID0gLzIwOig/PHJlZz5bMC05YS1mXXsxNn0pOy8uZXhlYyhicmtSZXNwb25zZSk7CiAgICBwYyA9IHRtcE1hdGNoID8gdG1wTWF0Y2guZ3JvdXBzWydyZWcnXSA6IG51bGw7CiAgICB0bXBNYXRjaCA9IC8xMDooPzxyZWc+WzAtOWEtZl17MTZ9KTsvLmV4ZWMoYnJrUmVzcG9uc2UpOwogICAgeDE2ID0gdG1wTWF0Y2ggPyB0bXBNYXRjaC5ncm91cHNbJ3JlZyddIDogbnVsbDsKICAgIGlmICghdGlkIHx8ICFwYyB8fCAheDE2KSB7CiAgICAgICAgbG9nKGBGYWlsZWQgdG8gZXh0cmFjdCByZWdpc3RlcnM6IHRpZD0ke3RpZH0sIHBjPSR7cGN9LCB4MTY9JHt4MTZ9YCk7CiAgICAgICAgY29udGludWU7CiAgICB9CiAgICBwYyA9IGxpdHRsZUVuZGlhbkhleFN0cmluZ1RvTnVtYmVyKHBjKTsKICAgIHgxNiA9IGxpdHRsZUVuZGlhbkhleFN0cmluZ1RvTnVtYmVyKHgxNik7CiAgICAKICAgIGxldCBpbnN0cnVjdGlvblJlc3BvbnNlID0gc2VuZF9jb21tYW5kKGBtJHtwYy50b1N0cmluZygxNil9LDRgKTsKICAgIGxvZyhgaW5zdHJ1Y3Rpb24gYXQgcGM6ICR7aW5zdHJ1Y3Rpb25SZXNwb25zZX1gKTsKICAgIGxldCBpbnN0clUzMiA9IGxpdHRsZUVuZGlhbkhleFRvVTMyKGluc3RydWN0aW9uUmVzcG9uc2UpOwogICAgbGV0IGJya0ltbWVkaWF0ZSA9IGV4dHJhY3RCcmtJbW1lZGlhdGUoaW5zdHJVMzIpOwogICAgbG9nKGBCUksgaW1tZWRpYXRlOiAweCR7YnJrSW1tZWRpYXRlLnRvU3RyaW5nKDE2KX0gKCR7YnJrSW1tZWRpYXRlfSlgKTsKICAgIGlmIChsZWdhY3lDb21tYW5kc1ticmtJbW1lZGlhdGVdICE9IHVuZGVmaW5lZCkgewogICAgICAgIC8vIHdoZW4gd2UgZmluZCBhIHZhbGlkIGJyayBpbW1lZGlhdGUgY29tbWFuZCwgcGFyc2UgeDAgYW5kIHgxCiAgICAgICAgdG1wTWF0Y2ggPSAvMDA6KD88cmVnPlswLTlhLWZdezE2fSk7Ly5leGVjKGJya1Jlc3BvbnNlKTsKICAgICAgICB4MCA9IHRtcE1hdGNoID8gdG1wTWF0Y2guZ3JvdXBzWydyZWcnXSA6IG51bGw7CiAgICAgICAgdG1wTWF0Y2ggPSAvMDE6KD88cmVnPlswLTlhLWZdezE2fSk7Ly5leGVjKGJya1Jlc3BvbnNlKTsKICAgICAgICB4MSA9IHRtcE1hdGNoID8gdG1wTWF0Y2guZ3JvdXBzWydyZWcnXSA6IG51bGw7CiAgICAgICAgaWYgKCF4MCB8fCAheDEpIHsKICAgICAgICAgICAgbG9nKGBGYWlsZWQgdG8gZXh0cmFjdCByZWdpc3RlcnM6IHgwPSR7eDB9LCB4MT0ke3gxfWApOwogICAgICAgICAgICBjb250aW51ZTsKICAgICAgICB9CiAgICAgICAgeDAgPSBsaXR0bGVFbmRpYW5IZXhTdHJpbmdUb051bWJlcih4MCk7CiAgICAgICAgeDEgPSBsaXR0bGVFbmRpYW5IZXhTdHJpbmdUb051bWJlcih4MSk7CiAgICAgICAgCiAgICAgICAgLy8ganVtcCBvdmVyIGJyawogICAgICAgIGxldCBwY1BsdXM0ID0gbnVtYmVyVG9MaXR0bGVFbmRpYW5IZXhTdHJpbmcocGMgKyA0bik7CiAgICAgICAgbGV0IHBjUGx1czRSZXNwb25zZSA9IHNlbmRfY29tbWFuZChgUDIwPSR7cGNQbHVzNH07dGhyZWFkOiR7dGlkfTtgKTsKICAgICAgICBsb2coYHBjUGx1czRSZXNwb25zZSA9ICR7cGNQbHVzNFJlc3BvbnNlfWApOwogICAgICAgIAogICAgICAgIC8vIGRpc3BhdGNoIGJyay1pbW1lZGlhdGUgY29tbWFuZAogICAgICAgIGNvbnN0IGNvbW1hbmQgPSBsZWdhY3lDb21tYW5kc1ticmtJbW1lZGlhdGVdOwogICAgICAgIGNvbW1hbmQoYnJrUmVzcG9uc2UpOwogICAgfSBlbHNlIHsKICAgICAgICBsb2coYFNraXBwaW5nIGJyZWFrcG9pbnQ6IGJyayBpbW1lZGlhdGUgMHgke2Jya0ltbWVkaWF0ZS50b1N0cmluZygxNil9IHdhcyBub3QgaGFuZGxlZCBieSB0aGlzIHNjcmlwdC4gWW91IGNvdWxkIGFkZCBpdCBieSBldmFsdWF0aW5nIGxlZ2FjeUNvbW1hbmRzWzB4JHticmtJbW1lZGlhdGUudG9TdHJpbmcoMTYpfV0gPSB5b3VyRnVuY3Rpb247YCk7CiAgICAgICAgY29udGludWU7CiAgICB9Cn0KCmZ1bmN0aW9uIEpJVDI2RGV0YWNoKCkgewogICAgbGV0IGRldGFjaFJlc3BvbnNlID0gc2VuZF9jb21tYW5kKGBEYCk7CiAgICBsb2coYGRldGFjaFJlc3BvbnNlID0gJHtkZXRhY2hSZXNwb25zZX1gKTsKICAgIGRldGFjaGVkID0gdHJ1ZTsKfQoKLy8gYnJrIDB4NjgKZnVuY3Rpb24gSklUMjZOZXdCcmVha3BvaW50cyhicmtSZXNwb25zZSkgewogICAgbGV0IGluc3RydWN0aW9uUmVzcG9uc2UgPSBzZW5kX2NvbW1hbmQoYG0ke3BjLnRvU3RyaW5nKDE2KX0sNGApOwogICAgbG9nKGBpbnN0cnVjdGlvbiBhdCBwYzogJHtpbnN0cnVjdGlvblJlc3BvbnNlfWApOwogICAgbGV0IGluc3RyVTMyID0gbGl0dGxlRW5kaWFuSGV4VG9VMzIoaW5zdHJ1Y3Rpb25SZXNwb25zZSk7CiAgICBsZXQgYnJrSW1tZWRpYXRlID0gZXh0cmFjdEJya0ltbWVkaWF0ZShpbnN0clUzMik7CiAgICAKICAgIGxldCBtZW1SZXNwb25zZSA9IHNlbmRfY29tbWFuZChgbSR7eDAudG9TdHJpbmcoMTYpfSwke3gxfWApOwoKICAgIGxldCBzY3JpcHRUZXh0ID0gaGV4VG9Bc2NpaShtZW1SZXNwb25zZSk7CiAgICBsb2coYFNjcmlwdCB0ZXh0OiAke3NjcmlwdFRleHR9YCk7CgogICAgY29uc3QgcmVzID0gcnVuU2NyaXB0QW5kQ2FwdHVyZShzY3JpcHRUZXh0KTsKICAgIGlmIChyZXMub2spIHsKICAgICAgICBsb2coJ1NjcmlwdCBzdWNjZWVkZWQ6JywgcmVzLnZhbHVlKTsKICAgIH0gZWxzZSB7CiAgICAgICAgbG9nKCdTY3JpcHQgZmFpbGVkOicsIHJlcy5uYW1lLCByZXMubWVzc2FnZSk7CiAgICAgICAgbG9nKHJlcy5zdGFjayk7CiAgICB9Cn0KCi8vIGJyayAweDY5CmZ1bmN0aW9uIEpJVDI2SGFuZGxlQnJrMHg2OShicmtSZXNwb25zZSkgewogICAgbGV0IHB1dFgwUmVzcG9uc2UgPSBzZW5kX2NvbW1hbmQoYFAwPUUwMDAwMDY5O3RocmVhZDoke3RpZH07YCk7CiAgICBsb2coYHB1dFgwUmVzcG9uc2UgPSAke3B1dFgwUmVzcG9uc2V9YCk7Cn0KCi8vIGJyayAweGYwMGQKZnVuY3Rpb24gSklUMjZIYW5kbGVCcmsweGYwMGQoYnJrUmVzcG9uc2UpIHsKICAgIC8vIGRpc3BhdGNoIGNvbW1hbmQgdmlhIHgxNgogICAgY29uc3QgY29tbWFuZCA9IGNvbW1hbmRzW3gxNl07CiAgICBpZiAoY29tbWFuZCA9PT0gdW5kZWZpbmVkKSB7CiAgICAgICAgbG9nKGBVbmtub3duIGNvbW1hbmQgJHt4MTYudG9TdHJpbmcoMTYpfWApOwogICAgICAgIHJldHVybjsKICAgIH0KICAgIGxvZyhgSW52b2tpbmcgY29tbWFuZCAke3gxNi50b1N0cmluZygxNil9YCk7CiAgICBjb21tYW5kKGJya1Jlc3BvbnNlKTsKfQoKZnVuY3Rpb24gSklUMjZQcmVwYXJlUmVnaW9uKGJya1Jlc3BvbnNlKSB7CiAgICBsZXQgaW5zdHJ1Y3Rpb25SZXNwb25zZSA9IHNlbmRfY29tbWFuZChgbSR7cGMudG9TdHJpbmcoMTYpfSw0YCk7CiAgICBsb2coYGluc3RydWN0aW9uIGF0IHBjOiAke2luc3RydWN0aW9uUmVzcG9uc2V9YCk7CiAgICBsZXQgaW5zdHJVMzIgPSBsaXR0bGVFbmRpYW5IZXhUb1UzMihpbnN0cnVjdGlvblJlc3BvbnNlKTsKICAgIGxldCBicmtJbW1lZGlhdGUgPSBleHRyYWN0QnJrSW1tZWRpYXRlKGluc3RyVTMyKTsKICAgIAogICAgaWYgKHgwID09IDBuICYmIHgxID09IDBuKSB7CiAgICAgICAgcmV0dXJuOwogICAgfQoKICAgIGxldCBqaXRQYWdlQWRkcmVzcyA9IHgwOwogICAgaWYgKHgwID09IDBuKSB7CiAgICAgICAgbGV0IHJlcXVlc3RSWFJlc3BvbnNlID0gc2VuZF9jb21tYW5kKGBfTSR7eDEudG9TdHJpbmcoMTYpfSxyeGApOwogICAgICAgIGxvZyhgcmVxdWVzdFJYUmVzcG9uc2UgPSAke3JlcXVlc3RSWFJlc3BvbnNlfWApOwogICAgICAgIAogICAgICAgIGlmICghcmVxdWVzdFJYUmVzcG9uc2UgfHwgcmVxdWVzdFJYUmVzcG9uc2UubGVuZ3RoID09PSAwKSB7CiAgICAgICAgICAgIGxvZyhgRmFpbGVkIHRvIGFsbG9jYXRlIFJYIG1lbW9yeWApOwogICAgICAgICAgICByZXR1cm47CiAgICAgICAgfQogICAgICAgIAogICAgICAgIGppdFBhZ2VBZGRyZXNzID0gQmlnSW50KGAweCR7cmVxdWVzdFJYUmVzcG9uc2V9YCk7CiAgICAgICAgbG9nKGBBbGxvY2F0ZWQgSklUIHBhZ2UgYXQgYWRkcmVzczogMHgke2ppdFBhZ2VBZGRyZXNzLnRvU3RyaW5nKDE2KX1gKTsKICAgIH0KCiAgICBsZXQgcHJlcGFyZUpJVFBhZ2VSZXNwb25zZSA9IHByZXBhcmVfbWVtb3J5X3JlZ2lvbihqaXRQYWdlQWRkcmVzcywgeDEpOwogICAgbG9nKGBwcmVwYXJlSklUUGFnZVJlc3BvbnNlID0gJHtwcmVwYXJlSklUUGFnZVJlc3BvbnNlfWApOwoKICAgIGxldCBwdXRYMFJlc3BvbnNlID0gc2VuZF9jb21tYW5kKGBQMD0ke251bWJlclRvTGl0dGxlRW5kaWFuSGV4U3RyaW5nKGppdFBhZ2VBZGRyZXNzKX07dGhyZWFkOiR7dGlkfTtgKTsKICAgIGxvZyhgcHV0WDBSZXNwb25zZSA9ICR7cHV0WDBSZXNwb25zZX1gKTsKfQoKLy8gdXRpbGl0aWVzCmZ1bmN0aW9uIGxpdHRsZUVuZGlhbkhleFN0cmluZ1RvTnVtYmVyKGhleFN0cikgewogICAgY29uc3QgYnl0ZXMgPSBbXTsKICAgIGZvciAobGV0IGkgPSAwOyBpIDwgaGV4U3RyLmxlbmd0aDsgaSArPSAyKSB7CiAgICAgICAgYnl0ZXMucHVzaChwYXJzZUludChoZXhTdHIuc3Vic3RyKGksIDIpLCAxNikpOwogICAgfQogICAgbGV0IG51bSA9IDBuOwogICAgZm9yIChsZXQgaSA9IDQ7IGkgPj0gMDsgaS0tKSB7CiAgICAgICAgbnVtID0gKG51bSA8PCA4bikgfCBCaWdJbnQoYnl0ZXNbaV0pOwogICAgfQogICAgcmV0dXJuIG51bTsKfQoKZnVuY3Rpb24gbnVtYmVyVG9MaXR0bGVFbmRpYW5IZXhTdHJpbmcobnVtKSB7CiAgICBjb25zdCBieXRlcyA9IFtdOwogICAgZm9yIChsZXQgaSA9IDA7IGkgPCA1OyBpKyspIHsKICAgICAgICBieXRlcy5wdXNoKE51bWJlcihudW0gJiAweEZGbikpOwogICAgICAgIG51bSA+Pj0gOG47CiAgICB9CiAgICB3aGlsZSAoYnl0ZXMubGVuZ3RoIDwgOCkgewogICAgICAgIGJ5dGVzLnB1c2goMCk7CiAgICB9CiAgICByZXR1cm4gYnl0ZXMubWFwKGIgPT4gYi50b1N0cmluZygxNikucGFkU3RhcnQoMiwgJzAnKSkuam9pbignJyk7Cn0KCmZ1bmN0aW9uIGxpdHRsZUVuZGlhbkhleFRvVTMyKGhleFN0cikgewogICAgcmV0dXJuIHBhcnNlSW50KGhleFN0ci5tYXRjaCgvLi4vZykucmV2ZXJzZSgpLmpvaW4oJycpLCAxNik7Cn0KCmZ1bmN0aW9uIGV4dHJhY3RCcmtJbW1lZGlhdGUodTMyKSB7CiAgICByZXR1cm4gKHUzMiA+PiA1KSAmIDB4RkZGRjsKfQoKZnVuY3Rpb24gaGV4VG9Bc2NpaShoZXhTdHIpIHsKICAgIGxldCBzdHIgPSAnJzsKICAgIGZvciAobGV0IGkgPSAwOyBpIDwgaGV4U3RyLmxlbmd0aDsgaSArPSAyKSB7CiAgICAgICAgY29uc3QgYnl0ZSA9IHBhcnNlSW50KGhleFN0ci5zdWJzdHIoaSwgMiksIDE2KTsKICAgICAgICBpZiAoYnl0ZSA9PT0gMCkgYnJlYWs7IAogICAgICAgIHN0ciArPSBTdHJpbmcuZnJvbUNoYXJDb2RlKGJ5dGUpOwogICAgfQogICAgcmV0dXJuIHN0cjsKfQoKZnVuY3Rpb24gcnVuU2NyaXB0QW5kQ2FwdHVyZShzY3JpcHRUZXh0KSB7CiAgICB0cnkgewogICAgICAgIGNvbnN0IHZhbHVlID0gZXZhbChzY3JpcHRUZXh0KTsKICAgICAgICByZXR1cm4geyBvazogdHJ1ZSwgdmFsdWUgfTsKICAgIH0gY2F0Y2ggKGVycikgewogICAgICAgIHJldHVybiB7CiAgICAgICAgICAgIG9rOiBmYWxzZSwKICAgICAgICAgICAgbmFtZTogZXJyICYmIGVyci5uYW1lLAogICAgICAgICAgICBtZXNzYWdlOiBlcnIgJiYgZXJyLm1lc3NhZ2UsCiAgICAgICAgICAgIHN0YWNrOiBlcnIgJiYgZXJyLnN0YWNrCiAgICAgICAgfTsKICAgIH0KfQ==
+// Universal JIT Script, last updated 2026-29-03 (YYYY-DD-MM)
+/*
+ // JIT "syscalls"
+ __attribute__((noinline,optnone,naked))
+ void JIT26Detach(void) {
+     asm("mov x16, #0 \\n"
+         "brk #0xf00d \\n"
+         "ret");
+ }
+ __attribute__((noinline,optnone,naked))
+ void* JIT26PrepareRegion(void *addr, size_t len) {
+     asm("mov x16, #1 \\n"
+         "brk #0xf00d \\n"
+         "ret");
+ }
+
+ __attribute__((noinline,optnone,naked))
+void BreakSendJITScript(char* script, size_t len) {
+    asm("mov x16, #2 \\n"
+        "brk #0xf00d \\n"
+        "ret");
+}
+ */
+const CMD_DETACH = 0;
+const CMD_PREPARE_REGION = 1;
+const CMD_NEW_BREAKPOINTS = 2;
+const commands = {
+    [CMD_DETACH]: JIT26Detach,
+    [CMD_PREPARE_REGION]: JIT26PrepareRegion,
+    [CMD_NEW_BREAKPOINTS]: JIT26NewBreakpoints
+};
+const legacyCommands = {
+    [0x68]: JIT26NewBreakpoints,
+    [0x69]: JIT26HandleBrk0x69,
+    [0xf00d]: JIT26HandleBrk0xf00d
+};
+
+// Log levels
+//const LOG_NONE = 0;
+const LOG_INFO = 1;
+const LOG_VERBOSE = 2;
+let logLevel = LOG_VERBOSE;
+function log_verbose(msg) {
+    if (logLevel >= LOG_VERBOSE) {
+        log(msg);
+    }
+}
+
+// To avoid having to re-parse these in each function, we save some registers here
+let tid, x0, x1, x16, pc;
+let detached = false;
+let continuesWithSignal = true;
+let pid = get_pid();
+let attachResponse = send_command(`vAttach;${pid.toString(16)}`);
+
+log(`pid = ${pid}`);
+log(`attach_response = ${attachResponse}`);
+    
+let totalBreakpoints = 0;
+while (!detached) {
+    totalBreakpoints++;
+    log(`Handling signal ${totalBreakpoints}`);
+    
+    let brkResponse = send_command(`c`);
+    log_verbose(`brkResponse = ${brkResponse}`);
+    
+    // extract tid, pc, x16
+    let tmpMatch = /T[0-9a-f]+thread:(?<tid>[0-9a-f]+);/.exec(brkResponse);
+    tid = tmpMatch ? tmpMatch.groups['tid'] : null;
+    tmpMatch = /20:(?<reg>[0-9a-f]{16});/.exec(brkResponse);
+    pc = tmpMatch ? tmpMatch.groups['reg'] : null;
+    tmpMatch = /10:(?<reg>[0-9a-f]{16});/.exec(brkResponse);
+    x16 = tmpMatch ? tmpMatch.groups['reg'] : null;
+    if (!tid || !pc || !x16) {
+        log(`Failed to extract registers: tid=${tid}, pc=${pc}, x16=${x16}`);
+        continue;
+    }
+    pc = littleEndianHexStringToNumber(pc);
+    x16 = littleEndianHexStringToNumber(x16);
+    
+    let instructionResponse = send_command(`m${pc.toString(16)},4`);
+    log(`instruction at pc: ${instructionResponse}`);
+    let instrU32 = littleEndianHexToU32(instructionResponse);
+    
+    // check if this is a brk
+    if ((instrU32 & 0xFFE0001F)>>>0 != 0xD4200000) {
+        log(`Skipping: instruction was not a brk (was 0x${instrU32.toString(16)})`);
+        if (continuesWithSignal) {
+            let signum = /^T(?<sig>[a-z0-9;]{2})/.exec(brkResponse);
+            signum = signum ? signum.groups['sig'] : null;
+            if (!signum) {
+                log(`Failed to extract signal number: ${signum}`);
+                continue;
+            }
+            log(`Continuing with signal 0x${signum}`);
+            send_command(`vCont;S${signum}:${tid}`);
+        }
+        continue;
+    }
+    
+    let brkImmediate = extractBrkImmediate(instrU32);
+    log(`BRK immediate: 0x${brkImmediate.toString(16)} (${brkImmediate})`);
+    if (legacyCommands[brkImmediate] != undefined) {
+        // when we find a valid brk immediate command, parse x0 and x1
+        tmpMatch = /00:(?<reg>[0-9a-f]{16});/.exec(brkResponse);
+        x0 = tmpMatch ? tmpMatch.groups['reg'] : null;
+        tmpMatch = /01:(?<reg>[0-9a-f]{16});/.exec(brkResponse);
+        x1 = tmpMatch ? tmpMatch.groups['reg'] : null;
+        if (!x0 || !x1) {
+            log(`Failed to extract registers: x0=${x0}, x1=${x1}`);
+            continue;
+        }
+        x0 = littleEndianHexStringToNumber(x0);
+        x1 = littleEndianHexStringToNumber(x1);
+        
+        // jump over brk
+        let pcPlus4 = numberToLittleEndianHexString(pc + 4n);
+        let pcPlus4Response = send_command(`P20=${pcPlus4};thread:${tid};`);
+        log(`pcPlus4Response = ${pcPlus4Response}`);
+        
+        // dispatch brk-immediate command
+        const command = legacyCommands[brkImmediate];
+        command(brkResponse);
+    } else {
+        log(`Skipping breakpoint: brk immediate 0x${brkImmediate.toString(16)} was not handled by this script. You could add it by evaluating legacyCommands[0x${brkImmediate.toString(16)}] = yourFunction;`);
+        continue;
+    }
+}
+
+function JIT26Detach() {
+    let detachResponse = send_command(`D`);
+    log_verbose(`detachResponse = ${detachResponse}`);
+    detached = true;
+}
+
+// brk 0x68
+function JIT26NewBreakpoints(brkResponse) {
+    let instructionResponse = send_command(`m${pc.toString(16)},4`);
+    log(`instruction at pc: ${instructionResponse}`);
+    let instrU32 = littleEndianHexToU32(instructionResponse);
+    let brkImmediate = extractBrkImmediate(instrU32);
+    
+    let memResponse = send_command(`m${x0.toString(16)},${x1}`);
+
+    let scriptText = hexToAscii(memResponse);
+    log_verbose(`Script text: ${scriptText}`);
+
+    const res = runScriptAndCapture(scriptText);
+    if (res.ok) {
+        log('Script succeeded:', res.value);
+    } else {
+        log('Script failed:', res.name, res.message);
+        log(res.stack);
+    }
+}
+
+// brk 0x69
+function JIT26HandleBrk0x69(brkResponse) {
+    // in the old script we chose 0x69, so now we check here and return error
+    // if you wish to keep using this, you can set your own handler like `legacyCommands[0x69] = yourHandler;` using BreakSendJITScript
+    log(`Error: It seems you are using legacy breakpoint 0x69. Please set your legacy handler using \\`legacyCommands[0x69] = yourHandler;\\` or migrate to universal jitcalls to use this script. The function will now return 0xE0000069.`);
+    let putX0Response = send_command(`P0=E0000069;thread:${tid};`);
+    log(`putX0Response = ${putX0Response}`);
+}
+
+// brk 0xf00d
+function JIT26HandleBrk0xf00d(brkResponse) {
+    // dispatch command via x16
+    const command = commands[x16];
+    if (command === undefined) {
+        log(`Unknown command ${x16.toString(16)}`);
+        return;
+    }
+    log(`Invoking command ${x16.toString(16)}`);
+    command(brkResponse);
+}
+
+function JIT26PrepareRegion(brkResponse) {
+    let instructionResponse = send_command(`m${pc.toString(16)},4`);
+    log(`instruction at pc: ${instructionResponse}`);
+    let instrU32 = littleEndianHexToU32(instructionResponse);
+    let brkImmediate = extractBrkImmediate(instrU32);
+    
+    if (x0 == 0n && x1 == 0n) {
+        return;
+    }
+
+    let jitPageAddress = x0;
+    if (x0 == 0n) {
+        let requestRXResponse = send_command(`_M${x1.toString(16)},rx`);
+        log_verbose(`requestRXResponse = ${requestRXResponse}`);
+        
+        if (!requestRXResponse || requestRXResponse.length === 0) {
+            log(`Failed to allocate RX memory`);
+            return;
+        }
+        
+        jitPageAddress = BigInt(`0x${requestRXResponse}`);
+        log(`Allocated JIT page at address: 0x${jitPageAddress.toString(16)}`);
+    }
+
+    let prepareJITPageResponse = prepare_memory_region(jitPageAddress, x1);
+    log(`prepareJITPageResponse = ${prepareJITPageResponse}`);
+
+    let putX0Response = send_command(`P0=${numberToLittleEndianHexString(jitPageAddress)};thread:${tid};`);
+    log(`putX0Response = ${putX0Response}`);
+}
+
+// utilities
+function littleEndianHexStringToNumber(hexStr) {
+    const bytes = [];
+    for (let i = 0; i < hexStr.length; i += 2) {
+        bytes.push(parseInt(hexStr.substr(i, 2), 16));
+    }
+    let num = 0n;
+    for (let i = 4; i >= 0; i--) {
+        num = (num << 8n) | BigInt(bytes[i]);
+    }
+    return num;
+}
+
+function numberToLittleEndianHexString(num) {
+    const bytes = [];
+    for (let i = 0; i < 5; i++) {
+        bytes.push(Number(num & 0xFFn));
+        num >>= 8n;
+    }
+    while (bytes.length < 8) {
+        bytes.push(0);
+    }
+    return bytes.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function littleEndianHexToU32(hexStr) {
+    return parseInt(hexStr.match(/../g).reverse().join(''), 16);
+}
+
+function extractBrkImmediate(u32) {
+    return (u32 >> 5) & 0xFFFF;
+}
+
+function hexToAscii(hexStr) {
+    let str = '';
+    for (let i = 0; i < hexStr.length; i += 2) {
+        const byte = parseInt(hexStr.substr(i, 2), 16);
+        if (byte === 0) break;
+        str += String.fromCharCode(byte);
+    }
+    return str;
+}
+
+function runScriptAndCapture(scriptText) {
+    try {
+        const value = eval(scriptText);
+        return { ok: true, value };
+    } catch (err) {
+        return {
+            ok: false,
+            name: err && err.name,
+            message: err && err.message,
+            stack: err && err.stack
+        };
+    }
+}
 """

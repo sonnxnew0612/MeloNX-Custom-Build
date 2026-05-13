@@ -1,0 +1,51 @@
+name: Build MeloNX iOS (IPA)
+
+on:
+  push:
+    branches: [ "main" ] 
+
+jobs:
+  build_ipa:
+    runs-on: macos-14 
+
+    steps:
+      - name: Lấy Source Code
+        uses: actions/checkout@v4
+
+      - name: Cài đặt .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Bước 1 - Biên dịch Lõi giả lập (Ryujinx Backend)
+        run: |
+          chmod +x distribution/ios/*.sh
+          ./distribution/ios/compile.sh 
+
+      - name: Bước 1.5 - Kích hoạt Xcode 16
+        run: |
+          sudo xcode-select -s $(ls -d /Applications/Xcode_16*.app | tail -n 1)/Contents/Developer
+
+      - name: Bước 2 - Biên dịch Vỏ ứng dụng
+        run: |
+          cd src/MeloNX
+          # Dọn dẹp các icon thay thế gây lỗi
+          find MeloNX/Assets/26-AppIcons -type d -name "*.icon" ! -name "AppIcon.icon" -exec rm -rf {} + || true
+          rm -rf MeloNX/Assets/26-AppIcons/SeasonIcons || true
+          
+          # Build
+          xcodebuild clean build -project MeloNX.xcodeproj -scheme MeloNX -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: Bước 3 - Đóng gói thành file IPA
+        run: |
+          cd src/MeloNX/build/Build/Products/Release-iphoneos
+          mkdir Payload
+          mv MeloNX.app Payload/
+          zip -qr MeloNX-Custom.ipa Payload
+          mv MeloNX-Custom.ipa ../../../../../MeloNX-Custom.ipa
+
+      - name: Lấy file IPA mang về
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeloNX-iOS-Release
+          path: "MeloNX-Custom.ipa"

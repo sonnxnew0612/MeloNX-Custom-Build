@@ -109,7 +109,7 @@ struct GamesListView: View {
                                     GameCardView(
                                         game: game,
                                         games: games,
-                                        gameRequirements: $gameRequirements,
+                                        gameRequirements: $gameRequirements
                                     )
                                     .id(game)
                                     .iOS18MatchedTransitionSource(id: game.fileURL.absoluteString, in: namespace ?? Namespace().wrappedValue)

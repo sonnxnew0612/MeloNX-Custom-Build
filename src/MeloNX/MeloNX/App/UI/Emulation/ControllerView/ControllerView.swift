@@ -283,7 +283,7 @@ struct ControllerView: View {
     private func editableJoystick(
         id: String,
         iscool: Bool = false,
-        showBackground: Binding<Bool>,
+        showBackground: Binding<Bool>
     ) -> some View {
         EditableJoystickView(
             id: id,
@@ -292,7 +292,7 @@ struct ControllerView: View {
             layout: $layout,
             isEditing: isEditing,
             selectedJoystick: $selectedJoystick,
-            selectedButton: $selectedButton,
+            selectedButton: $selectedButton
         )
     }
 

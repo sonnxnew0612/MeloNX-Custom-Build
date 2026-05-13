@@ -14,12 +14,10 @@ extension GamesListView {
                 ToolbarItem(placement: .topBarTrailing) {
                     addGameButton
                 }
-                .sharedBackgroundVisibility(nativeSettings.disableLiquidGlass.value ? .hidden : .automatic)
                 
                 ToolbarItem(placement: .topBarLeading) {
                     optionsSection
                 }
-                .sharedBackgroundVisibility(nativeSettings.disableLiquidGlass.value ? .hidden : .automatic)
             }
         } else {
             return Group {

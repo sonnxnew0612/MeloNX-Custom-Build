@@ -167,7 +167,8 @@ extension View {
     @ViewBuilder
     func liquidGlass(cornerRadius: CGFloat = 12, interactive: Bool = true, background: @escaping () -> some View) -> some View {
         if #available(iOS 19, *), !NativeSettingsManager.shared.disableLiquidGlass.value {
-            self.glassEffect(interactive ? .regular.tint(Color(.systemGray6)).interactive() : .regular.tint(Color(.systemGray6)), in: RoundedRectangle(cornerRadius: cornerRadius))
+            // Thay vì dùng glassEffect tự chế, ta dùng .regularMaterial chuẩn của Apple
+            self.background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
         } else {
             self
                 .background(
@@ -176,14 +177,15 @@ extension View {
         }
     }
     
-    
     @ViewBuilder
     func liquidGlass(cornerRadius: CGFloat = 12, selectedGame: Binding<Game?>, game: Game, background: @escaping () -> some View) -> some View {
         if #available(iOS 19, *), !NativeSettingsManager.shared.disableLiquidGlass.value {
             if selectedGame.wrappedValue != nil, selectedGame.wrappedValue?.id == game.id {
-                self.glassEffect(.regular.tint(.blue.opacity(0.5)).interactive(), in: RoundedRectangle(cornerRadius: cornerRadius))
+                // Game đang được chọn: Đổ nền màu xanh lam nhạt (blue opacity)
+                self.background(Color.blue.opacity(0.3), in: RoundedRectangle(cornerRadius: cornerRadius))
             } else {
-                self.glassEffect(.regular.tint(Color(.systemGray6)).interactive(), in: RoundedRectangle(cornerRadius: cornerRadius))
+                // Game không được chọn: Đổ nền màu xám nhạt
+                self.background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: cornerRadius))
             }
         } else {
              self
