@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15 # Sử dụng macOS 15 để có Xcode 16.2
+    runs-on: macos-15 # Xcode 16.2 mặc định
 
     steps:
       - name: Checkout Repository
@@ -29,9 +29,11 @@ jobs:
           chmod +x distribution/ios/*.sh
           ./distribution/ios/get_dotnet.sh 
 
-      - name: Build MeloNX for iOS (Final Fix)
+      - name: Build MeloNX for iOS (The Final Fix)
         run: |
-          # Ép Xcode tìm header trong đúng thư mục Dependencies để sửa lỗi Bridging Header
+          # Xác định đường dẫn gốc của project
+          SRC_ROOT=$(pwd)/src/MeloNX
+          
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
@@ -45,9 +47,11 @@ jobs:
                      ACTOOL_VALIDATE_CONTENTS=NO \
                      ACTOOL_COMPILE_FOR_DEVICE_ONLY=YES \
                      COMPILER_INDEX_STORE_ENABLE=NO \
-                     HEADER_SEARCH_PATHS='$(inherited) ${SRCROOT}/MeloNX/Dependencies/**' \
-                     FRAMEWORK_SEARCH_PATHS='$(inherited) ${SRCROOT}/MeloNX/Dependencies/**' \
                      SWIFT_COMPILATION_MODE=wholemodule \
+                     HEADER_SEARCH_PATHS="$(inherited) ${SRC_ROOT}/MeloNX/Dependencies/** ${SRC_ROOT}/MeloNX/App/Core/Headers/**" \
+                     USER_HEADER_SEARCH_PATHS="${SRC_ROOT}/MeloNX/Dependencies/**" \
+                     FRAMEWORK_SEARCH_PATHS="$(inherited) ${SRC_ROOT}/MeloNX/Dependencies/**" \
+                     OTHER_LDFLAGS="$(inherited) -Xlinker -no_warn_duplicate_libraries" \
                      clean build
 
       - name: Upload Build Artifact
