@@ -1,0 +1,32 @@
+name: Build MeloNX iOS (IPA)
+
+on:
+  push:
+    branches: [ "main" ] # Tự động chạy khi bạn push code
+  workflow_dispatch:     # Cho phép bấm chạy bằng tay trên web
+
+jobs:
+  build_ipa:
+    runs-on: macos-14 # Thuê một con máy Mac ảo của GitHub
+
+    steps:
+      - name: Lấy Source Code
+        uses: actions/checkout@v4
+
+      - name: Cài đặt .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Chạy Script Build iOS của Dev cũ
+        run: |
+          cd distribution/ios
+          chmod +x *.sh
+          # Gọi file compile.sh để tự động build IPA
+          ./compile.sh 
+
+      - name: Lấy file IPA mang về
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeloNX-iOS-Release
+          path: "**/*.ipa"
