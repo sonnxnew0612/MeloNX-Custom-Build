@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15 # Xcode 16.2 mặc định
+    runs-on: macos-15
 
     steps:
       - name: Checkout Repository
@@ -29,10 +29,13 @@ jobs:
           chmod +x distribution/ios/*.sh
           ./distribution/ios/get_dotnet.sh 
 
-      - name: Build MeloNX for iOS (The Final Fix)
+      - name: Build MeloNX for iOS (The Final Solution)
         run: |
-          # Xác định đường dẫn gốc của project
           SRC_ROOT=$(pwd)/src/MeloNX
+          
+          # CHIÊU CUỐI: Dùng sed để xóa bỏ tham số App Icon trong file project 
+          # Điều này ép Xcode build app mà không cần compile cái bộ icon gây lỗi kia nữa
+          sed -i '' 's/ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;//g' src/MeloNX/MeloNX.xcodeproj/project.pbxproj
           
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
@@ -49,9 +52,7 @@ jobs:
                      COMPILER_INDEX_STORE_ENABLE=NO \
                      SWIFT_COMPILATION_MODE=wholemodule \
                      HEADER_SEARCH_PATHS="$(inherited) ${SRC_ROOT}/MeloNX/Dependencies/** ${SRC_ROOT}/MeloNX/App/Core/Headers/**" \
-                     USER_HEADER_SEARCH_PATHS="${SRC_ROOT}/MeloNX/Dependencies/**" \
                      FRAMEWORK_SEARCH_PATHS="$(inherited) ${SRC_ROOT}/MeloNX/Dependencies/**" \
-                     OTHER_LDFLAGS="$(inherited) -Xlinker -no_warn_duplicate_libraries" \
                      clean build
 
       - name: Upload Build Artifact
