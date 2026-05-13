@@ -7,7 +7,8 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15 # Sử dụng macOS 15 để có bộ SDK mới nhất ổn định hơn
+    # Chuyển về macos-14 vì macos-15 (Xcode 16) đôi khi quá khắt khe với các dự án cũ
+    runs-on: macos-14 
 
     steps:
       - name: Checkout Repository
@@ -22,28 +23,32 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
 
       - name: Build Dependencies
         run: |
           chmod +x distribution/ios/*.sh
           ./distribution/ios/get_dotnet.sh 
 
-      - name: Build MeloNX for iOS
+      - name: Build MeloNX for iOS (Final Fix)
         run: |
-          # SỬA ĐỔI: Sử dụng tham số -sdk iphoneos để Xcode tự chọn bản SDK cao nhất hiện có trên server
-          # Bỏ qua tham số -destination generic nếu nó gây lỗi nhận diện SDK
+          # Dùng xcodebuild với các thông số ép buộc cực hạn
           xcodebuild -project src/MeloNX/MeloNX.xcodeproj \
                      -scheme MeloNX \
                      -configuration Release \
                      -sdk iphoneos \
+                     -destination 'generic/platform=iOS' \
                      -derivedDataPath build \
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGNING_REQUIRED=NO \
+                     AD_HOC_CODE_SIGNING_ALLOWED=YES \
                      ASSETCATALOG_COMPILER_SKIP_APP_STORE_UTILIZATION=YES \
                      ACTOOL_VALIDATE_CONTENTS=NO \
                      ACTOOL_COMPILE_FOR_DEVICE_ONLY=YES \
                      COMPILER_INDEX_STORE_ENABLE=NO \
+                     SWIFT_COMPILATION_MODE=wholemodule \
+                     GCC_PREPROCESS_DEFINITIONS='$GCC_PREPROCESS_DEFINITIONS JIT=1' \
+                     OTHER_SWIFT_FLAGS="-suppress-warnings" \
                      clean build
 
       - name: Upload Build Artifact
