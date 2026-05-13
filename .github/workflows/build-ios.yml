@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Lấy Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Cài đặt .NET 8
         uses: actions/setup-dotnet@v4
